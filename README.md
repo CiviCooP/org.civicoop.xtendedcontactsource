@@ -1,2 +1,2 @@
 # org.civicoop.xtendedcontactsource
-Native CiviCRM Extension adds column to contact summary showing either earliest activity or group membership
+Native CiviCRM Extension adds a column to the contact summary showing either earliest activity or group membership.
