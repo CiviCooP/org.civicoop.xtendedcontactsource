@@ -9,13 +9,23 @@
  * @license AGPL-3.0
  * @link https://civicoop.plan.io/projects/aivl-civicrm-ontwikkeling-2016/wiki/Contact_Processing_from_Petition
  */
-class CRM_Xtendedcontactsouce_Contact {
+class CRM_Xtendedcontactsource_Contact {
 
   private $_contactId = NULL;
   private $_targetRecordType = NULL;
 
   function __construct($contactId) {
     $this->_contactId = $contactId;
+    try {
+      $this->_targetRecordType = civicrm_api3('OptionValue', 'getvalue', array(
+        'option_group_id' => 'activity_contacts',
+        'name' => 'Activity Targets',
+        'return' => 'value'
+      ));
+    } catch (CiviCRM_API3_Exception $ex) {
+      throw new Exception('Core option value for record type Activity Target in option group Activity Contacts is corrupted, 
+      contact your system administrator');
+    }
   }
 
   /**
@@ -29,11 +39,16 @@ class CRM_Xtendedcontactsouce_Contact {
     // find earliest group membership
     $groupContact = $this->getEarliestGroupContact();
     // show earliest of the two as contact source
-    $activityDate = new DateTime($activity->activity_date_time);
-    $groupContactDate = new DateTime($groupContact->group_contact_date);
-    if ($groupContactDate < $activityDate) {
-      return 'Source is membership of group '.$groupContact->title.' with date '.$groupContactDate->format('d-M-Y');
-    } else {
+    if (isset($activity->activity_date_time)) {
+      $activityDate = new DateTime($activity->activity_date_time);
+    }
+    if (isset($groupContact->group_contact_date)) {
+      $groupContactDate = new DateTime($groupContact->group_contact_date);
+    }
+    if (!isset($groupContactDate) && !isset($activityDate)) {
+      return '-';
+    }
+    if (!isset($groupContactDate) || $activityDate < $groupContactDate) {
       try {
         $activityType = civicrm_api3('OptionValue', 'getvalue', array(
           'option_group_id' => 'activity_type',
@@ -43,7 +58,10 @@ class CRM_Xtendedcontactsouce_Contact {
       } catch (CiviCRM_API3_Exception $ex) {
         $activityType = $activity->activity_type_id;
       }
-      return 'Source is activity of type '.$activityType.' on date '.$activityDate->format('d-M-Y').' with subject '.$activity->subject;
+      return 'Activity of type '.$activityType.' on date '.$activityDate->format('d-M-Y');
+    }
+    if (!isset($activityDate) || $groupContactDate < $activityDate) {
+      return 'Membership of group '.$groupContact->title.' with date '.$groupContactDate->format('d-M-Y');
     }
   }
 
@@ -97,6 +115,27 @@ class CRM_Xtendedcontactsouce_Contact {
         return $dao;
       } else {
         return FALSE;
+      }
+    }
+  }
+
+  /**
+   * Method to process the civicrm pageRun hook
+   * @param $contactId
+   * @param $content
+   * @return bool|string
+   */
+  public static function pageRun(&$page) {
+    $pageName = $page->getVar('_name');
+    // only if contact summary
+    if ($pageName == 'CRM_Contact_Page_View_Summary') {
+      $contactId = $page->getVar('_contactId');
+      $contact = new CRM_Xtendedcontactsource_Contact($contactId);
+      $xtendedContactSource = $contact->getContactSource();
+      if ($xtendedContactSource) {
+        $page->assign('xtendedContactSource', $xtendedContactSource);
+        CRM_Core_Region::instance('page-body')->add(array(
+          'template' => 'CRM/Xtendedcontactsource/XtendedContactSource.tpl'));
       }
     }
   }

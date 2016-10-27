@@ -3,6 +3,15 @@
 require_once 'xtendedcontactsource.civix.php';
 
 /**
+ * Implements hook_civicrm_pageRun
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_pageRun
+ */
+function xtendedcontactsource_civicrm_pageRun(&$page) {
+  CRM_Xtendedcontactsource_Contact::pageRun($page);
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
