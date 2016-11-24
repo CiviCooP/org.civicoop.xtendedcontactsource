@@ -23,8 +23,8 @@ class CRM_Xtendedcontactsource_Contact {
         'return' => 'value'
       ));
     } catch (CiviCRM_API3_Exception $ex) {
-      throw new Exception('Core option value for record type Activity Target in option group Activity Contacts is corrupted, 
-      contact your system administrator');
+      throw new Exception(ts('Core option value for record type Activity Target in option group Activity Contacts is corrupted, 
+      contact your system administrator'));
     }
   }
 
@@ -49,7 +49,7 @@ class CRM_Xtendedcontactsource_Contact {
       return '-';
     }
     if (!isset($activityDate) || empty($activityDate)) {
-      return 'Membership of group ' . $groupContact->title . ' with date ' . $groupContactDate->format('d-M-Y');
+      return ts('Membership of group ') . $groupContact->title . ts(' with date ') . $groupContactDate->format('d-M-Y');
     }
     if (!isset($groupContactDate) || $activityDate < $groupContactDate) {
       try {
@@ -61,10 +61,10 @@ class CRM_Xtendedcontactsource_Contact {
       } catch (CiviCRM_API3_Exception $ex) {
         $activityType = $activity->activity_type_id;
       }
-      return 'Activity Type '.$activityType.' on '.$activityDate->format('d-M-Y').' ('.substr($activity->subject, 0, 30).'...)';
+      return ts('Activity Type ').$activityType.ts(' on ').$activityDate->format('d-M-Y').' ('.substr($activity->subject, 0, 30).'...)';
     }
     if (!isset($activityDate) || $groupContactDate < $activityDate) {
-      return 'Membership of group '.$groupContact->title.' with date '.$groupContactDate->format('d-M-Y');
+      return ts('Membership of group ').$groupContact->title.ts(' with date ').$groupContactDate->format('d-M-Y');
     }
   }
 
@@ -124,9 +124,8 @@ class CRM_Xtendedcontactsource_Contact {
 
   /**
    * Method to process the civicrm pageRun hook
-   * @param $contactId
-   * @param $content
-   * @return bool|string
+   *
+   * @param $page
    */
   public static function pageRun(&$page) {
     $pageName = $page->getVar('_name');
