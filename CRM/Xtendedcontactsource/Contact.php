@@ -48,6 +48,9 @@ class CRM_Xtendedcontactsource_Contact {
     if (!isset($groupContactDate) && !isset($activityDate)) {
       return '-';
     }
+    if (!isset($activityDate) || empty($activityDate)) {
+      return 'Membership of group ' . $groupContact->title . ' with date ' . $groupContactDate->format('d-M-Y');
+    }
     if (!isset($groupContactDate) || $activityDate < $groupContactDate) {
       try {
         $activityType = civicrm_api3('OptionValue', 'getvalue', array(
@@ -58,7 +61,7 @@ class CRM_Xtendedcontactsource_Contact {
       } catch (CiviCRM_API3_Exception $ex) {
         $activityType = $activity->activity_type_id;
       }
-      return 'Activity of type '.$activityType.' on date '.$activityDate->format('d-M-Y');
+      return 'Activity Type '.$activityType.' on '.$activityDate->format('d-M-Y').' ('.substr($activity->subject, 0, 30).'...)';
     }
     if (!isset($activityDate) || $groupContactDate < $activityDate) {
       return 'Membership of group '.$groupContact->title.' with date '.$groupContactDate->format('d-M-Y');
