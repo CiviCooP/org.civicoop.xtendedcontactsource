@@ -18,13 +18,7 @@ function _xtendedcontactsource_civix_civicrm_config(&$config = NULL) {
 
   $extRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR;
   $extDir = $extRoot . 'templates';
-
-  if ( is_array( $template->template_dir ) ) {
-      array_unshift( $template->template_dir, $extDir );
-  }
-  else {
-      $template->template_dir = array( $extDir, $template->template_dir );
-  }
+  $template->addTemplateDir($extDir);
 
   $include_path = $extRoot . PATH_SEPARATOR . get_include_path( );
   set_include_path($include_path);
@@ -152,7 +146,7 @@ function _xtendedcontactsource_civix_find_files($dir, $pattern) {
     if ($dh = opendir($subdir)) {
       while (FALSE !== ($entry = readdir($dh))) {
         $path = $subdir . DIRECTORY_SEPARATOR . $entry;
-        if ($entry{0} == '.') {
+        if ($entry[0] == '.') {
         } elseif (is_dir($path)) {
           $todos[] = $path;
         }
