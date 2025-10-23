@@ -19,7 +19,7 @@ function _civicrm_api3_contact_Getxtendedsource_spec(&$spec) {
  * @return array API result descriptor
  * @see civicrm_api3_create_success
  * @see civicrm_api3_create_error
- * @throws API_Exception
+ * @throws CRM_Core_Exception
  */
 function civicrm_api3_contact_Getxtendedsource($params) {
   if (array_key_exists('contact_id', $params)) {
@@ -28,7 +28,7 @@ function civicrm_api3_contact_Getxtendedsource($params) {
     $returnValues['xtended_contact_source'] = $xtendedContactSource->getContactSource();
     return civicrm_api3_create_success($returnValues, $params, 'Contact', 'getxtendedsource');
   } else {
-    throw new API_Exception('Parameter contact_id is mandatory', 1000);
+    throw new CRM_Core_Exception('Parameter contact_id is mandatory', 1000);
   }
 }
 
