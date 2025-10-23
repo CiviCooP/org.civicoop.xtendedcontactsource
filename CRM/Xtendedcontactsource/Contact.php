@@ -22,7 +22,7 @@ class CRM_Xtendedcontactsource_Contact {
         'name' => 'Activity Targets',
         'return' => 'value'
       ));
-    } catch (CiviCRM_API3_Exception $ex) {
+    } catch (CRM_Core_Exception $ex) {
       throw new Exception(ts('Core option value for record type Activity Target in option group Activity Contacts is corrupted, 
       contact your system administrator'));
     }
@@ -58,7 +58,7 @@ class CRM_Xtendedcontactsource_Contact {
           'value' => $activity->activity_type_id,
           'return' => 'label'
         ));
-      } catch (CiviCRM_API3_Exception $ex) {
+      } catch (CRM_Core_Exception $ex) {
         $activityType = $activity->activity_type_id;
       }
       return ts('Activity Type ').$activityType.ts(' on ').$activityDate->format('d-M-Y').' ('.substr($activity->subject, 0, 30).'...)';
