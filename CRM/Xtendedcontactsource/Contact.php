@@ -17,11 +17,11 @@ class CRM_Xtendedcontactsource_Contact {
   function __construct($contactId) {
     $this->_contactId = $contactId;
     try {
-      $this->_targetRecordType = civicrm_api3('OptionValue', 'getvalue', array(
+      $this->_targetRecordType = civicrm_api3('OptionValue', 'getvalue', [
         'option_group_id' => 'activity_contacts',
         'name' => 'Activity Targets',
         'return' => 'value'
-      ));
+      ]);
     } catch (CRM_Core_Exception $ex) {
       throw new Exception(ts('Core option value for record type Activity Target in option group Activity Contacts is corrupted, 
       contact your system administrator'));
@@ -53,11 +53,11 @@ class CRM_Xtendedcontactsource_Contact {
     }
     if (!isset($groupContactDate) || $activityDate < $groupContactDate) {
       try {
-        $activityType = civicrm_api3('OptionValue', 'getvalue', array(
+        $activityType = civicrm_api3('OptionValue', 'getvalue', [
           'option_group_id' => 'activity_type',
           'value' => $activity->activity_type_id,
           'return' => 'label'
-        ));
+        ]);
       } catch (CRM_Core_Exception $ex) {
         $activityType = $activity->activity_type_id;
       }
@@ -81,13 +81,13 @@ class CRM_Xtendedcontactsource_Contact {
         WHERE a.is_deleted = %2 AND a.is_test=%2 AND a.is_current_revision = %3 
         AND a.activity_date_time <> %4 AND ac.contact_id = %5
         ORDER BY a.activity_date_time ASC LIMIT 1";
-      $sqlParams = array(
-        1 => array($this->_targetRecordType, 'Integer'),
-        2 => array(0, 'Integer'),
-        3 => array(1, 'Integer'),
-        4 => array('1970-01-01 01:00:00', 'String'),
-        5 => array($this->_contactId, 'Integer')
-      );
+      $sqlParams = [
+        1 => [$this->_targetRecordType, 'Integer'],
+        2 => [0, 'Integer'],
+        3 => [1, 'Integer'],
+        4 => ['1970-01-01 01:00:00', 'String'],
+        5 => [$this->_contactId, 'Integer']
+      ];
       $dao = CRM_Core_DAO::executeQuery($sql, $sqlParams);
       if ($dao->fetch()) {
         return $dao;
@@ -109,10 +109,10 @@ class CRM_Xtendedcontactsource_Contact {
           AND gc.status = sh.status 
         JOIN civicrm_group g ON gc.group_id = g.id 
         WHERE gc.contact_id = %1 AND gc.status = %2 ORDER BY sh.date ASC LIMIT 1";
-      $sqlParams = array(
-        1 => array($this->_contactId, 'Integer'),
-        2 => array('Added', 'String')
-      );
+      $sqlParams = [
+        1 => [$this->_contactId, 'Integer'],
+        2 => ['Added', 'String']
+      ];
       $dao = CRM_Core_DAO::executeQuery($sql, $sqlParams);
       if ($dao->fetch()) {
         return $dao;
@@ -136,8 +136,8 @@ class CRM_Xtendedcontactsource_Contact {
       $xtendedContactSource = $contact->getContactSource();
       if ($xtendedContactSource) {
         $page->assign('xtendedContactSource', $xtendedContactSource);
-        CRM_Core_Region::instance('page-body')->add(array(
-          'template' => 'CRM/Xtendedcontactsource/XtendedContactSource.tpl'));
+        CRM_Core_Region::instance('page-body')->add([
+          'template' => 'CRM/Xtendedcontactsource/XtendedContactSource.tpl']);
       }
     }
   }
